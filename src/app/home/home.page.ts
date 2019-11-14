@@ -130,10 +130,18 @@ export class HomePage {
   reorderAnimal(even){
     let animal = this.animals[even.detail.from];
 
+    //Sauvegarde de l'animal en cours que je tente de trouver
+    let animalToGuess = this.animals[this.currentAnimalIndex];
+
     //Suppression à la position de départ
     this.animals.splice(even.detail.from, 1);
     //Insertion à la position d'arrivée
     this.animals.splice(even.detail.to, 0, animal);
+
+    //Redéfinition de l'index de l'animal à trouver
+    this.currentAnimalIndex = this.animals.findIndex(
+      (item)=>{ return item.title == animalToGuess.title }
+    );
 
     //Finalisation le réagencement
     even.detail.complete(); 
