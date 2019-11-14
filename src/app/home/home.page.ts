@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { ToastController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-home',
@@ -73,15 +75,20 @@ export class HomePage {
     }
   ];
 
-  constructor() {}
+  constructor(private toastCtrl: ToastController) {}
 
   private media = null;
   private currentAnimalIndex:number = null;
 
+  reorderDisabled: boolean = true;
+
   playSound(){
 
-    //Choisir un son au hasard
-    this.currentAnimalIndex = Math.floor(Math.random() * this.animals.length);
+    //Choisir un animal au hasard si aucun n'a été déjà choisi
+    if(this.currentAnimalIndex == null){
+      this.currentAnimalIndex = Math.floor(Math.random() * this.animals.length);
+    }
+   
     let animal = this.animals[this.currentAnimalIndex];
 
     //Instanciation de l'objet Audio
@@ -109,7 +116,27 @@ export class HomePage {
       message = "Ce n'est pas ça essaie encore";
     }
 
-    console.log(message);
+    this.showToast(message);
+  }
+
+  private showToast(text){
+    this.toastCtrl.create({
+      message: text,
+      duration: 1000,
+      position: 'middle'
+    }).then( (toast) =>{ toast.present()});
+  }
+
+  reorderAnimal(even){
+    let animal = this.animals[even.detail.from];
+
+    //Suppression à la position de départ
+    this.animals.splice(even.detail.from, 1);
+    //Insertion à la position d'arrivée
+    this.animals.splice(even.detail.to, 0, animal);
+
+    //Finalisation le réagencement
+    even.detail.complete(); 
   }
 
 }
